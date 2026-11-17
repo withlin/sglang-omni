@@ -1,0 +1,35 @@
+config_cls: TadaPipelineConfig
+model_path: HumeAI/tada-3b-ml
+
+stages:
+  preprocessing:
+    factory:
+      max_target_tokens: 2048
+      num_extra_steps: 0
+      default_language: English
+  reference_encode:
+    factory:
+      codec_model_path: HumeAI/tada-codec
+      # Required: the Llama 3.2 tokenizer is not shipped with the weights.
+      tokenizer_path: meta-llama/Llama-3.2-1B
+      aligner_cache_size: 2
+      encoder_noise_std: 0.5
+      num_transition_steps: 5
+      alignment_check: warn
+  tts_engine:
+    factory:
+      num_flow_matching_steps: 10
+      acoustic_cfg_scale: 1.8
+      duration_cfg_scale: 1.0
+      negative_condition_source: zero
+      max_running_requests: 4
+    engine:
+      mem_fraction_static: 0.6
+      max_running_requests: 4
+  vocoder:
+    factory:
+      codec_model_path: HumeAI/tada-codec
+      stream_chunk_frames: 50
+      stream_left_context_frames: 128
+      stream_right_context_frames: 32
+      stream_max_batch_size: 8
