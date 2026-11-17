@@ -55,11 +55,11 @@ def make_state() -> TadaState:
     )
 
 
-def test_budget_is_remaining_positions_plus_extra_steps() -> None:
+def test_budget_counts_remaining_positions_extra_steps_and_prefill_token() -> None:
     state = make_state()
     data = build_tada_request(make_payload(state))
     assert data.req.origin_input_ids == state.input_ids[:11]
-    assert data.req.sampling_params.max_new_tokens == 9
+    assert data.req.sampling_params.max_new_tokens == 10
     assert data.req.sampling_params.temperature == 0.6
     assert data.req.sampling_params.top_p == 0.9
     assert data.req.sampling_params.repetition_penalty == 1.1

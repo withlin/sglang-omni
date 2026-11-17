@@ -75,7 +75,11 @@ def build_tada_request(payload: StagePayload) -> TadaRequestData:
         )
     else:
         pass
-    budget = (schedule.shape[1] - prefill_end) + int(state.num_extra_steps)
+    # post_prefill already emits schedule[prefill_end] as the first output
+    # token, and SGLang counts it against max_new_tokens; budget must include
+    # it or the decode loop stops one step early and never appends the
+    # trailing time value the vocoder needs.
+    budget = (schedule.shape[1] - prefill_end) + int(state.num_extra_steps) + 1
     sampling_params = SamplingParams(
         max_new_tokens=budget,
         temperature=TEXT_TEMPERATURE,
